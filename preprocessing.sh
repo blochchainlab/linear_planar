@@ -12,11 +12,12 @@
 
 # relies on a few environement: fsl5, mrtrix3, ants, cuda8
 
-
 # for eddy_openmp
 OMP_NUM_THREADS=6
 
+# CHANGE ME
 FOLDER=/path/to/root/
+GRADFILE=coeffConnectom.grad
 
 # Make folder where all the (very numerous) sub-step will live
 mkdir -p $FOLDER'PREPRO'
@@ -29,7 +30,6 @@ guess_N.py $FOLDER'NII/dwi.nii' $FOLDER'PREPRO/dwi_SAM_sigma.nii' $FOLDER'PREPRO
 # rician bias correction
 debias.py $FOLDER'NII/dwi.nii' $FOLDER'PREPRO/dwi_SAM_N.nii' $FOLDER'PREPRO/dwi_SAM_sigma.nii' $FOLDER'PREPRO/dwi_deb.nii' $FOLDER'PREPRO/dwi_deb_nan.nii' $FOLDER'PREPRO/dwi_deb_nanMean.nii'
 
-
 # denoising
 dwidenoise $FOLDER'PREPRO/dwi_deb.nii' $FOLDER'PREPRO/dwi_deb_den.nii' -noise $FOLDER'PREPRO/dwi_deb_mppca_sigma.nii'
 mrcalc $FOLDER'PREPRO/dwi_deb.nii' $FOLDER'PREPRO/dwi_deb_den.nii' -subtract $FOLDER'PREPRO/dwi_deb_den_Residual.nii'
@@ -39,7 +39,6 @@ mrabs $FOLDER'PREPRO/dwi_deb_den_Residual.nii' $FOLDER'PREPRO/dwi_deb_den_Residu
 mrdegibbs $FOLDER'PREPRO/dwi_deb_den.nii' $FOLDER'PREPRO/dwi_deb_den_gib.nii' -axes 0,1
 mrcalc $FOLDER'PREPRO/dwi_deb_den.nii' $FOLDER'PREPRO/dwi_deb_den_gib.nii' -subtract $FOLDER'PREPRO/dwi_deb_den_gib_Residual.nii'
 mrabs $FOLDER'PREPRO/dwi_deb_den_gib_Residual.nii' $FOLDER'PREPRO/dwi_deb_den_gib_ResidualAbs.nii'
-
 
 # split data by b-value b-tensor shape for shell by shell eddy
 # TODO: make automatic detection of b-values
@@ -57,6 +56,7 @@ fsl5.0-mcflirt -in $FOLDER'PREPRO/dwi_deb_den_gib__b50_lin.nii' -out $FOLDER'PRE
 mrmath $FOLDER'PREPRO/dwi_deb_den_gib__b50_lin_mc.nii.gz' mean $FOLDER'PREPRO/dwi_deb_den_gib__b50_lin_mc_mean.nii.gz' -axis 3
 
 # make quick brain mask from mean b50
+# This bet should definitely be manually QCd
 bet $FOLDER'PREPRO/dwi_deb_den_gib__b50_lin_mc_mean.nii.gz' $FOLDER'PREPRO/bet_init_b50.nii.gz' -m -n -f 0.1
 maskfilter $FOLDER'PREPRO/bet_init_b50_mask.nii.gz' dilate $FOLDER'PREPRO/bet_init_b50_dil.nii.gz'
 
@@ -75,9 +75,9 @@ mrcat -axis 3 $FOLDER'PREPRO/dwi_deb_den_gib__b50_lin_mc_mean.nii.gz' $FOLDER'PR
 (echo 0.0 0.0 0.0; cat $FOLDER'PREPRO/bvecs__b'$BVAL'_'$SHELLTYPE'.txt') > $FOLDER'PREPRO/preeddy_bvecs__b'$BVAL'_'$SHELLTYPE'.txt';
 (echo 0.0; cat $FOLDER'PREPRO/bvals__b'$BVAL'_'$SHELLTYPE'.txt') > $FOLDER'PREPRO/preeddy_bvals__b'$BVAL'_'$SHELLTYPE'.txt';
 # uncomment to use eddy openmp without gradient non-linearity correction
-# /home/raid2/paquette/tools/eddy_openmp --imain=$FOLDER'PREPRO/preeddy__b'$BVAL'_'$SHELLTYPE'.nii' --mask=$FOLDER'PREPRO/bet_init_b50_dil.nii.gz' --index=$FOLDER'PREPRO/preeddy_indices__b'$BVAL'_'$SHELLTYPE'.txt' --acqp=$FOLDER'NII/pe_table__cmrr_diff_2mm_AP_PA.txt' --bvecs=$FOLDER'PREPRO/preeddy_bvecs__b'$BVAL'_'$SHELLTYPE'.txt' --bvals=$FOLDER'PREPRO/preeddy_bvals__b'$BVAL'_'$SHELLTYPE'.txt' --out=$FOLDER'PREPRO/eddy_b'$BVAL'_'$SHELLTYPE'' --topup=$FOLDER'PREPRO/topup_' --cnr_maps --data_is_shelled; 
+# /home/raid2/paquette/tools/eddy_openmp --imain=$FOLDER'PREPRO/preeddy__b'$BVAL'_'$SHELLTYPE'.nii' --mask=$FOLDER'PREPRO/bet_init_b50_dil.nii.gz' --index=$FOLDER'PREPRO/preeddy_indices__b'$BVAL'_'$SHELLTYPE'.txt' --acqp=$FOLDER'NII/pe_table_AP_PA.txt' --bvecs=$FOLDER'PREPRO/preeddy_bvecs__b'$BVAL'_'$SHELLTYPE'.txt' --bvals=$FOLDER'PREPRO/preeddy_bvals__b'$BVAL'_'$SHELLTYPE'.txt' --out=$FOLDER'PREPRO/eddy_b'$BVAL'_'$SHELLTYPE'' --topup=$FOLDER'PREPRO/topup_' --cnr_maps --data_is_shelled; 
 # uncomment to use eddy cuda without gradient non-linearity correction
-# /home/raid2/paquette/tools/eddy_cuda8.0 --imain=$FOLDER'PREPRO/preeddy__b'$BVAL'_'$SHELLTYPE'.nii' --mask=$FOLDER'PREPRO/bet_init_b50_dil.nii.gz' --index=$FOLDER'PREPRO/preeddy_indices__b'$BVAL'_'$SHELLTYPE'.txt' --acqp=$FOLDER'NII/pe_table__cmrr_diff_2mm_AP_PA.txt' --bvecs=$FOLDER'PREPRO/preeddy_bvecs__b'$BVAL'_'$SHELLTYPE'.txt' --bvals=$FOLDER'PREPRO/preeddy_bvals__b'$BVAL'_'$SHELLTYPE'.txt' --out=$FOLDER'PREPRO/eddy_b'$BVAL'_'$SHELLTYPE'' --topup=$FOLDER'PREPRO/topup_' --cnr_maps --data_is_shelled; 
+# /home/raid2/paquette/tools/eddy_cuda8.0 --imain=$FOLDER'PREPRO/preeddy__b'$BVAL'_'$SHELLTYPE'.nii' --mask=$FOLDER'PREPRO/bet_init_b50_dil.nii.gz' --index=$FOLDER'PREPRO/preeddy_indices__b'$BVAL'_'$SHELLTYPE'.txt' --acqp=$FOLDER'NII/pe_table_AP_PA.txt' --bvecs=$FOLDER'PREPRO/preeddy_bvecs__b'$BVAL'_'$SHELLTYPE'.txt' --bvals=$FOLDER'PREPRO/preeddy_bvals__b'$BVAL'_'$SHELLTYPE'.txt' --out=$FOLDER'PREPRO/eddy_b'$BVAL'_'$SHELLTYPE'' --topup=$FOLDER'PREPRO/topup_' --cnr_maps --data_is_shelled; 
 # make sure it MULTIPLY the jacobian
 python /home/raid2/paquette/tools/onestep_eddy_nlgc/eddy_nlgc_mp.py --in $FOLDER'PREPRO/preeddy__b'$BVAL'_'$SHELLTYPE'.nii' --bvec $FOLDER'PREPRO/preeddy_bvecs__b'$BVAL'_'$SHELLTYPE'.txt' --bval $FOLDER'PREPRO/preeddy_bvals__b'$BVAL'_'$SHELLTYPE'.txt' --mask $FOLDER'PREPRO/bet_init_b50_dil.nii.gz' --acqp $FOLDER'NII/pe_table_AP_PA.txt' --index $FOLDER'PREPRO/preeddy_indices__b'$BVAL'_'$SHELLTYPE'.txt' --topup $FOLDER'PREPRO/topup_' --out $FOLDER'PREPRO/onestep__b'$BVAL'_'$SHELLTYPE'.nii'
 # cleanup to keep everything per shell
@@ -107,7 +107,6 @@ dwiextract -no_bzero -fslgrad $FOLDER'PREPRO/preeddy_bvecs__b'$BVAL'_'$SHELLTYPE
 done;
 done
 
-
 # compute spherical mean
 # TODO: not hardcoding b-values
 for BVAL in 1000 2000 4000;
@@ -119,12 +118,11 @@ mean_std_4th.py $FOLDER'PREPRO/v1_eddy_b'$BVAL'_'$SHELLTYPE'.nii.gz' $FOLDER'PRE
 done;
 done
 
-
 # making a S0 image from b50 lin and b1000 lin
 # 1) apply topup to b50
 applytopup -i $FOLDER'PREPRO/dwi_deb_den_gib__b50_lin.nii' -a $FOLDER'NII/pe_table_AP_PA.txt' -x 1 -t $FOLDER'PREPRO/topup_' -o $FOLDER'PREPRO/dwi_deb_den_gib__b50_lin_top.nii.gz' -m jac
 # 2) run grdient non linear correction
-gradient_unwarp.py $FOLDER'PREPRO/dwi_deb_den_gib__b50_lin_top.nii.gz' $FOLDER'PREPRO/dwi_deb_den_gib__b50_lin_top_nlgc.nii' siemens -g /home/raid2/paquette/tools/gradunwarp/coeffConnectom.grad
+gradient_unwarp.py $FOLDER'PREPRO/dwi_deb_den_gib__b50_lin_top.nii.gz' $FOLDER'PREPRO/dwi_deb_den_gib__b50_lin_top_nlgc.nii' siemens -g $GRADFILE
 # 3) run mc-flirt on topuped b50
 fsl5.0-mcflirt -in $FOLDER'PREPRO/dwi_deb_den_gib__b50_lin_top_nlgc.nii.gz' -out $FOLDER'PREPRO/dwi_deb_den_gib__b50_lin_top_nlgc_mc.nii' -stages 4 -refvol 0
 # 4) cat with topup+eddy corrected b1000
@@ -133,31 +131,6 @@ mrcat -axis 3 $FOLDER'PREPRO/dwi_deb_den_gib__b50_lin_top_nlgc_mc.nii.gz' $FOLDE
 (cat $FOLDER'PREPRO/bvals__b50_lin.txt'; cat $FOLDER'PREPRO/bvals__b1000_lin.txt') > $FOLDER'PREPRO/bvals_for_S0.txt'
 # 5) fit tensor to get S0
 dwi2tensor $FOLDER'PREPRO/dwi_for_S0.nii' $FOLDER'PREPRO/dti_for_S0.nii' -b0 $FOLDER'PREPRO/computed_S0.nii' -fslgrad $FOLDER'PREPRO/bvecs_for_S0.txt' $FOLDER'PREPRO/bvals_for_S0.txt' -mask $FOLDER'PREPRO/bet_init_b50_dil.nii.gz'
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 

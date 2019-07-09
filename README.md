@@ -13,7 +13,7 @@ This repository contains the preprocessing and fitting scripts for double PGSE d
 6. Compute susceptibility induced distorsions from AP PA B0 (FSL's topup)  
 7. Linear registration (motion correction) and averaging of lowest b-value (FSL's mcflirt)  
 8. Get brain mask from moco low b image for eddy current correction (FSL's bet)  
-9. Estimate gradient non-linearity distorsion (gradunwarp, requires "secret" coeff.grad file)  
+9. Estimate gradient non-linearity distorsion ([THIS version of gradunwarp](https://github.com/mpaquette/gradunwarp), requires "secret" coeff.grad file)  
 10. Estimate diffusion gradient eddy current induced distosions (FSL's eddy)
 11. single interpolation application of (6) (9) (10)  
 12. Apply spherical averaging to shell  
