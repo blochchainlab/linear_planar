@@ -5,7 +5,7 @@ This repository contains the preprocessing and fitting scripts for double PGSE d
 
 ### The current preprocessing pipeline uses the following steps
 
-1. Estimate slicewise gaussian sigma (Current version of the pipeline uses an unreleased early version of [Samuel St Jean's Automated characterization of noise distributions in diffusion MRI data](https://www.biorxiv.org/content/10.1101/686436v1))
+1. Estimate slicewise gaussian sigma (or voxelwise if you have noisemap) with autodmri [github](https://github.com/samuelstjean/autodmri) [preprint](https://www.biorxiv.org/content/10.1101/686436v3)
 2. Correct for non-gaussian Bias (second moment method)  
 3. Denoising (Mrtrix's implementation of MPPCA)  
 4. Gibbs ringing correction (Mrtrix's implementation of the subvoxel shifts method)  

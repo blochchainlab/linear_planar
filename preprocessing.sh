@@ -22,10 +22,9 @@ GRADFILE=coeffConnectom.grad
 # Make folder where all the (very numerous) sub-step will live
 mkdir -p $FOLDER'PREPRO'
 
-# Uses an unreleased early version of Samuel St Jean's Automated characterization of noise distributions in diffusion MRI data
-# TODO: upgrade to the github released version
-# raw sigma estimation
-guess_N.py $FOLDER'NII/dwi.nii' $FOLDER'PREPRO/dwi_SAM_sigma.nii' $FOLDER'PREPRO/dwi_SAM_N.nii' $FOLDER'PREPRO/dwi_SAM_mask.nii' ml 2
+# raw sigma estimation (with or without noisemap)
+get_distribution $FOLDER'NII/dwi.nii' $FOLDER'PREPRO/dwi_SAM_sigma.nii' $FOLDER'PREPRO/dwi_SAM_N.nii' $FOLDER'PREPRO/dwi_SAM_mask.nii' -a 2 -m 'maxlk' --ncores 6
+# get_distribution $FOLDER'NII/dwi.nii' $FOLDER'PREPRO/dwi_SAM_sigma.nii' $FOLDER'PREPRO/dwi_SAM_N.nii' $FOLDER'PREPRO/dwi_SAM_mask.nii' -a 2 -m 'maxlk' --ncores 6 --noise_maps
 
 # rician bias correction
 debias.py $FOLDER'NII/dwi.nii' $FOLDER'PREPRO/dwi_SAM_N.nii' $FOLDER'PREPRO/dwi_SAM_sigma.nii' $FOLDER'PREPRO/dwi_deb.nii' $FOLDER'PREPRO/dwi_deb_nan.nii' $FOLDER'PREPRO/dwi_deb_nanMean.nii'
