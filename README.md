@@ -22,10 +22,10 @@ This repository contains the preprocessing and fitting scripts for double PGSE d
 
 
 ### TODOs and Issues
+* Upgrade debiasing second moment method for recalibration from [NLSAM](https://github.com/samuelstjean/nlsam)
 * Because the vector norms in the gradient scheme file are relative, we need to detect the bmax probably from the DICOM header to be able to remove all the hardcoded b-values  
-* The one step interpolation of eddy and gradient non-linearity relies on hardcoded software paths  
+* The one step interpolation of eddy and gradient non-linearity relie on hardcoded software paths  
 * the coeff.grad file relies on an hardcoded path  
-* Upgrade the gaussian sigma estimation to the [released version](https://github.com/samuelstjean/autodmri)
 * Fix and move back to [Cornelius Eichner's version of one step interpolation of eddy and gradient non-linearity](https://github.com/cornelius-eichner/onestep_eddy_nlgc)  
 
 
