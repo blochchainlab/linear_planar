@@ -89,20 +89,20 @@ def sm_signal_model_1(b, bd, Dpar_in, Dpar_ex, Dperp_ex, f_in, f_ex):
 	# zepplin-like extra axonal compartement
 	sm_signal_ex = sm_signal_generic_reparam(b, bd, Dpar_ex, Dperp_ex)
 	# ball-like csf axonal compartement with Dpar_ex = Dperp_ex = 3 um^2/ms (free water diffusivity at in-vivo human brain temperature)
-	sm_signal_csd = sm_signal_generic_reparam(b, bd, 3., 3.)
+	sm_signal_csf = sm_signal_generic_reparam(b, bd, 3., 3.)
 	# model1 enforces sum(fraction) = 1 indirectly
-	f_csd = 1 - f_in - f_ex
-	return f_in*sm_signal_in + f_ex*sm_signal_ex + f_csd*sm_signal_csd
+	f_csf = 1 - f_in - f_ex
+	return f_in*sm_signal_in + f_ex*sm_signal_ex + f_csf*sm_signal_csf
 
 # model2 stick(intra) + zepplin(extra) + ball(csf)
-def sm_signal_model_2(b, bd, Dpar_in, Dpar_ex, Dperp_ex, f_in, f_ex, f_csd):
+def sm_signal_model_2(b, bd, Dpar_in, Dpar_ex, Dperp_ex, f_in, f_ex, f_csf):
 	# stick-like intra axonal compartement with Dperp_ex = 0
 	sm_signal_in = sm_signal_generic_reparam(b, bd, Dpar_in, 0)
 	# zepplin-like extra axonal compartement
 	sm_signal_ex = sm_signal_generic_reparam(b, bd, Dpar_ex, Dperp_ex)
 	# ball-like csf axonal compartement with Dpar_ex = Dperp_ex = 3 um^2/ms (free water diffusivity at in-vivo human brain temperature)
-	sm_signal_csd = sm_signal_generic_reparam(b, bd, 3., 3.)
+	sm_signal_csf = sm_signal_generic_reparam(b, bd, 3., 3.)
 	# model2 doesnt enforces sum(fraction) = 1 directly, need to deal with it "later"
-	return f_in*sm_signal_in + f_ex*sm_signal_ex + f_csd*sm_signal_csd
+	return f_in*sm_signal_in + f_ex*sm_signal_ex + f_csf*sm_signal_csf
 
 

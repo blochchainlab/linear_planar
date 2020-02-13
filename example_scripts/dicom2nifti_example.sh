@@ -11,5 +11,5 @@ mrconvert $FOLDER'dicoms/' $FOLDER'data.nii' -stride 1,2,3 -datatype float64 -nt
 
 # diffusion data with "topup+eddy" export flag and bvec/bval export flag
 # the stride flag is extremely important
-mrconvert $FOLDER'dicoms/' $FOLDER'data.nii' -stride 1,2,3,4 -datatype float64 -nthreads 6 -export_pe_eddy $FOLDER'PE.txt' $FOLDER'eddy_indices.txt' -fslgrad $FOLDER'bvec.txt' $FOLDER'bval.txt'
+mrconvert $FOLDER'dicoms/' $FOLDER'data.nii' -stride 1,2,3,4 -datatype float64 -nthreads 6 -export_pe_eddy $FOLDER'PE.txt' $FOLDER'eddy_indices.txt' --export_grad_fsl $FOLDER'bvec.txt' $FOLDER'bval.txt'
 
