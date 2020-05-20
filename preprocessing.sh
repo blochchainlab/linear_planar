@@ -19,6 +19,9 @@ OMP_NUM_THREADS=6
 FOLDER=/path/to/root/
 GRADFILE=coeffConnectom.grad
 
+# path to https://github.com/cornelius-eichner/onestep_eddy_nlgc
+ONESHOTPATH=/home/raid2/paquette/tools/onestep_eddy_nlgc/
+
 # Make folder where all the (very numerous) sub-step will live
 mkdir -p $FOLDER'PREPRO'
 
@@ -78,7 +81,7 @@ mrcat -axis 3 $FOLDER'PREPRO/dwi_deb_den_gib__b50_lin_mc_mean.nii.gz' $FOLDER'PR
 # uncomment to use eddy cuda without gradient non-linearity correction
 # /home/raid2/paquette/tools/eddy_cuda8.0 --imain=$FOLDER'PREPRO/preeddy__b'$BVAL'_'$SHELLTYPE'.nii' --mask=$FOLDER'PREPRO/bet_init_b50_dil.nii.gz' --index=$FOLDER'PREPRO/preeddy_indices__b'$BVAL'_'$SHELLTYPE'.txt' --acqp=$FOLDER'NII/pe_table_AP_PA.txt' --bvecs=$FOLDER'PREPRO/preeddy_bvecs__b'$BVAL'_'$SHELLTYPE'.txt' --bvals=$FOLDER'PREPRO/preeddy_bvals__b'$BVAL'_'$SHELLTYPE'.txt' --out=$FOLDER'PREPRO/eddy_b'$BVAL'_'$SHELLTYPE'' --topup=$FOLDER'PREPRO/topup_' --cnr_maps --data_is_shelled; 
 # make sure it MULTIPLY the jacobian
-python /home/raid2/paquette/tools/onestep_eddy_nlgc/eddy_nlgc_mp.py --in $FOLDER'PREPRO/preeddy__b'$BVAL'_'$SHELLTYPE'.nii' --bvec $FOLDER'PREPRO/preeddy_bvecs__b'$BVAL'_'$SHELLTYPE'.txt' --bval $FOLDER'PREPRO/preeddy_bvals__b'$BVAL'_'$SHELLTYPE'.txt' --mask $FOLDER'PREPRO/bet_init_b50_dil.nii.gz' --acqp $FOLDER'NII/pe_table_AP_PA.txt' --index $FOLDER'PREPRO/preeddy_indices__b'$BVAL'_'$SHELLTYPE'.txt' --topup $FOLDER'PREPRO/topup_' --out $FOLDER'PREPRO/onestep__b'$BVAL'_'$SHELLTYPE'.nii'
+python $ONESHOTPATH"eddy_nlgc_mp.py" --in $FOLDER'PREPRO/preeddy__b'$BVAL'_'$SHELLTYPE'.nii' --bvec $FOLDER'PREPRO/preeddy_bvecs__b'$BVAL'_'$SHELLTYPE'.txt' --bval $FOLDER'PREPRO/preeddy_bvals__b'$BVAL'_'$SHELLTYPE'.txt' --mask $FOLDER'PREPRO/bet_init_b50_dil.nii.gz' --acqp $FOLDER'NII/pe_table_AP_PA.txt' --index $FOLDER'PREPRO/preeddy_indices__b'$BVAL'_'$SHELLTYPE'.txt' --topup $FOLDER'PREPRO/topup_' --out $FOLDER'PREPRO/onestep__b'$BVAL'_'$SHELLTYPE'.nii'
 # cleanup to keep everything per shell
 mv $FOLDER'PREPRO/eddy_tmp.eddy_post_eddy_shell_PE_translation_parameters' $FOLDER'PREPRO/b'$BVAL'_'$SHELLTYPE'_eddy_tmp.eddy_post_eddy_shell_PE_translation_parameters'  
 mv $FOLDER'PREPRO/eddy_tmp.eddy_post_eddy_shell_alignment_parameters'      $FOLDER'PREPRO/b'$BVAL'_'$SHELLTYPE'_eddy_tmp.eddy_post_eddy_shell_alignment_parameters'       
