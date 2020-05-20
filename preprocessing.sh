@@ -124,7 +124,9 @@ done
 # 1) apply topup to b50
 applytopup -i $FOLDER'PREPRO/dwi_deb_den_gib__b50_lin.nii' -a $FOLDER'NII/pe_table_AP_PA.txt' -x 1 -t $FOLDER'PREPRO/topup_' -o $FOLDER'PREPRO/dwi_deb_den_gib__b50_lin_top.nii.gz' -m jac
 # 2) run grdient non linear correction
-gradient_unwarp.py $FOLDER'PREPRO/dwi_deb_den_gib__b50_lin_top.nii.gz' $FOLDER'PREPRO/dwi_deb_den_gib__b50_lin_top_nlgc.nii' siemens -g $GRADFILE
+gradient_unwarp.py $FOLDER'PREPRO/dwi_deb_den_gib__b50_lin_top.nii.gz' $FOLDER'PREPRO/dwi_deb_den_gib__b50_lin_top_nlgc_nojac.nii' siemens -g $GRADFILE -n --outfilewarp $FOLDER'PREPRO/dwi_deb_den_gib__b50_lin_top_warp.nii.gz'
+python $ONESHOTPATH"calc_jacobian.py" --in $FOLDER'PREPRO/dwi_deb_den_gib__b50_lin_top_warp.nii.gz' --out $FOLDER'PREPRO/dwi_deb_den_gib__b50_lin_top_warp_jac.nii.gz'
+fslmaths $FOLDER'PREPRO/dwi_deb_den_gib__b50_lin_top_nlgc_nojac.nii' -mul $FOLDER'PREPRO/dwi_deb_den_gib__b50_lin_top_warp_jac.nii.gz' $FOLDER'PREPRO/dwi_deb_den_gib__b50_lin_top_nlgc.nii'
 # 3) run mc-flirt on topuped b50
 fsl5.0-mcflirt -in $FOLDER'PREPRO/dwi_deb_den_gib__b50_lin_top_nlgc.nii.gz' -out $FOLDER'PREPRO/dwi_deb_den_gib__b50_lin_top_nlgc_mc.nii' -stages 4 -refvol 0
 # 4) cat with topup+eddy corrected b1000
