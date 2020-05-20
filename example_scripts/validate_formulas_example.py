@@ -7,8 +7,8 @@ from smt_lin_pla import *
 
 ## we want to generate a set of well distribution point on the sphere
 ## and then generate a linear and a planar B-tensor for each point
-## the linear one point in the direction
-## the planar have their plane normal pointng toward it
+## the linear one points in the generated direction
+## the planar one have their plane normal pointing toward it
 
 ## This is a bit old, it uses some naming convention that are different then the fitting code
 
@@ -45,7 +45,7 @@ for idx in range(dirs.shape[0]):
 	planar_dirs[idx, 1] = u3
 
 
-## G1G2G3.txt like structure
+## G1G2G3.txt-like structure
 ## g3 = 0 because we are not doing spherical B-tensor
 g1 = np.concatenate((dirs, planar_dirs[:,0]))
 g2 = np.concatenate((dirs, planar_dirs[:,1]))
@@ -115,7 +115,7 @@ S_lin = genSig(D1, D2, D3, V, Vex, Vw, pb_lin, b_lin)
 S_pla = genSig(D1, D2, D3, V, Vex, Vw, pb_pla, b_pla)
 
 
-## this should fit
+## this should match
 signal_lin_numerical = S_lin.mean()
 signal_lin_analytical = sm_signal_model_2(b_lin[0], 1., D1, D2, D3, V, Vex, Vw)[0]
 signal_pla_numerical = S_pla.mean()
